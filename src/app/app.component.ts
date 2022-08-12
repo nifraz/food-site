@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'food-site';
+  navItem = 'recipe';
+
+  navChanged(navItem: string){
+    this.navItem = navItem;
+  }
 }
