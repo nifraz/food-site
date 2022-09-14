@@ -1,0 +1,33 @@
+<app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+<div class="alert alert-danger fade show" role="alert" *ngIf="!loading && error">
+    <i class="bi bi-exclamation-circle"></i> {{errorMessage}}
+</div>
+
+<form [formGroup]="modelForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <div class="mb-3 row">
+        <label for="email" class="col-sm-2 col-form-label">Email</label>
+        <div class="col-sm-8 col-md-5">
+            <input type="email" class="form-control" id="email" formControlName="email" placeholder="email@example.com">
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="password" class="col-sm-2 col-form-label">Password</label>
+        <div class="col-sm-8 col-md-5">
+            <input type="password" class="form-control" formControlName="password" id="password">
+        </div>
+    </div>
+    <div class="mb-3 row" *ngIf="false">
+        <label for="confirmPassword" class="col-sm-2 col-form-label">Confirm Password</label>
+        <div class="col-sm-8 col-md-5">
+            <input type="password" class="form-control" id="confirmPassword">
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <div class="col">
+            <button type="submit" class="btn btn-success" [disabled]="modelForm.invalid">{{ loginMode ? 'Login' :
+                'Register' }}</button> |
+            <a class="link-primary" (click)="onSwitchMode()">{{ loginMode ? 'Register' : 'Login' }}</a>
+        </div>
+    </div>
+</form>
