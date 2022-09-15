@@ -1,8 +1,12 @@
 <app-loading-spinner *ngIf="loading"></app-loading-spinner>
 
-<div class="alert alert-danger fade show" role="alert" *ngIf="!loading && error">
+<!-- <div class="alert alert-danger fade show" role="alert" *ngIf="!loading && error">
     <i class="bi bi-exclamation-circle"></i> {{errorMessage}}
-</div>
+</div> -->
+
+<!-- <app-alert [message]="errorMessage" (close)="onAlertClose()" *ngIf="!loading && error"></app-alert> -->
+
+<ng-template appPlaceholder></ng-template>
 
 <form [formGroup]="modelForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
     <div class="mb-3 row">

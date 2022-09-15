@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceholderDirective } from '../shared/placeholder.directive';
 import { AuthResponseModel } from './auth-response-model';
 import { AuthService } from './auth.service';
 
@@ -11,14 +13,17 @@ import { AuthService } from './auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, OnDestroy {
 
   loginMode: boolean = true;
   loading: boolean = false;
-  error: boolean = false;
-  errorMessage: string = '';
+  //error: boolean = false;
+  //errorMessage: string = '';
 
   modelForm!: FormGroup;
+  alertSubscription?: Subscription;
+
+  @ViewChild(PlaceholderDirective) errorPlaceHolder!: PlaceholderDirective;
 
   constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) { }
 
@@ -30,6 +35,10 @@ export class AuthComponent implements OnInit {
         //'confirmPassword': ['', []]
       }
     );
+  }
+
+  ngOnDestroy(): void {
+    this.alertSubscription?.unsubscribe();
   }
 
   onSwitchMode() {
@@ -61,13 +70,14 @@ export class AuthComponent implements OnInit {
         next: item => {
           //console.log(item);
           this.router.navigate(['/recipes']);
-          this.error = false;
+          //this.error = false;
           this.loading = false;
         },
         error: (err: Error) => {
           //console.error(err);
-          this.errorMessage = err.message;
-          this.error = true;
+          //this.errorMessage = err.message;
+          this.showErrorAlert(err.message);
+          //this.error = true;
           this.loading = false;
         }
       }
@@ -76,4 +86,17 @@ export class AuthComponent implements OnInit {
     this.modelForm.reset();
   }
 
+  private showErrorAlert(message: string){
+    this.errorPlaceHolder.viewContainerRef.clear();
+    const componetRef = this.errorPlaceHolder.viewContainerRef.createComponent(AlertComponent);
+    componetRef.instance.message = message;
+    this.alertSubscription = componetRef.instance.close.subscribe(() => {
+      this.errorPlaceHolder.viewContainerRef.clear();
+      this.alertSubscription?.unsubscribe();
+    });
+  }
+
+  onAlertClose(){
+    //this.error = false;
+  }
 }
