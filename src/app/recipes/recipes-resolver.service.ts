@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { DataStorageService } from '../shared/services/data-storage.service';
-import { RecipesService } from '../shared/services/recipes.service';
 import { Recipe } from './recipe-list/recipe.model';
+import { RecipesService } from './recipes.service';
 
 @Injectable({
   providedIn: 'root'

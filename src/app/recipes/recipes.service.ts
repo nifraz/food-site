@@ -1,12 +1,10 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Recipe } from 'src/app/recipes/recipe-list/recipe.model';
-import { Ingredient } from '../ingredient.model';
-import { ShoppingService } from './shopping.service';
+import { Ingredient } from '../shared/ingredient.model';
+import { ShoppingService } from '../shopping-list/shopping.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class RecipesService {
   // recipes: Recipe[] = [
   //   new Recipe(
