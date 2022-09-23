@@ -5,14 +5,14 @@ import { BehaviorSubject, catchError, delay, Observable, Subject, tap, throwErro
 import { AuthRequestModel } from './auth-request-model';
 import { AuthResponseModel } from './auth-response-model';
 import { User } from './user.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_KEY = 'AIzaSyDmHdwEARoTbyZCSf0pSuIdM7a5NMgCqY4';
-  private readonly REGISTER_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.API_KEY}`;
-  private readonly LOGIN_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.API_KEY}`;
+  private readonly REGISTER_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`;
+  private readonly LOGIN_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseApiKey}`;
 
   private autoLogoutTimer: any;
 
@@ -73,7 +73,7 @@ export class AuthService {
    *
    * @beta
    */
-  setAutoLogout(duration: number){
+  setAutoLogout(duration: number) {
     //console.log(duration);
     this.autoLogoutTimer = setTimeout(() => this.logout(), duration);
   }
