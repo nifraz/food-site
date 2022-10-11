@@ -8,6 +8,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core.module';
 import { LoggingService } from './logging.service';
+import { StoreModule } from '@ngrx/store';
+import { shoppingReducer } from './shopping-list/store/shopping.reducer';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,9 @@ import { LoggingService } from './logging.service';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    StoreModule.forRoot({
+      shoppingList: shoppingReducer
+    }),
     //AuthModule,
     //RecipesModule,
     //ShoppingModule,
