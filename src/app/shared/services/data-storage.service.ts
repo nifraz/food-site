@@ -1,7 +1,6 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { exhaustMap, map, Observable, tap } from 'rxjs';
-import { AuthService } from 'src/app/auth/auth.service';
+import { map, Observable, tap } from 'rxjs';
 import { Recipe } from 'src/app/recipes/recipe-list/recipe.model';
 import { RecipesService } from 'src/app/recipes/recipes.service';
 
@@ -14,7 +13,6 @@ export class DataStorageService {
   constructor(
     private httpClient: HttpClient,
     private recipesService: RecipesService,
-    private authService: AuthService
   ) { }
 
   saveRecipes(): void {
@@ -24,11 +22,7 @@ export class DataStorageService {
   }
 
   fetchRecipes(): Observable<Recipe[]> {
-    return this.authService.user.pipe(
-      exhaustMap(user => {
-        //console.log(user);
-        return this.httpClient.get<Recipe[]>(this.ENDPOINT_URL);
-      }),
+    return this.httpClient.get<Recipe[]>(this.ENDPOINT_URL).pipe(
       map(res => {
         return res.map(
           recipe => {
