@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceholderDirective } from '../shared/placeholder.directive';
-import { AuthResponseModel } from './auth-response-model';
-import { AuthService } from './auth.service';
-
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from "./store/auth.actions";
 
 @Component({
   selector: 'app-auth',
@@ -17,15 +16,19 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   loginMode: boolean = true;
   loading: boolean = false;
-  //error: boolean = false;
-  //errorMessage: string = '';
+  error: boolean = false;
+  errorMessage: string = '';
 
   modelForm!: FormGroup;
   alertSubscription?: Subscription;
+  storeSubscription?: Subscription;
 
   @ViewChild(PlaceholderDirective) errorPlaceHolder!: PlaceholderDirective;
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    private store: Store<fromApp.AppState>
+  ) { }
 
   ngOnInit(): void {
     this.modelForm = this.formBuilder.group(
@@ -35,10 +38,23 @@ export class AuthComponent implements OnInit, OnDestroy {
         //'confirmPassword': ['', []]
       }
     );
+
+    this.storeSubscription = this.store.select('auth').subscribe(
+      state => {
+        console.log('state changed', state);
+        this.loading = state.loading;
+        this.error = state.error;
+        this.errorMessage = state.errorMessage;
+        if (this.error) {
+          this.showErrorAlert(this.errorMessage);
+        }
+      }
+    )
   }
 
   ngOnDestroy(): void {
     this.alertSubscription?.unsubscribe();
+    this.storeSubscription?.unsubscribe();
   }
 
   onSwitchMode() {
@@ -55,48 +71,28 @@ export class AuthComponent implements OnInit, OnDestroy {
       returnSecureToken: true
     }
 
-    this.loading = true;
-
-    let authResponseObservable!: Observable<AuthResponseModel>;
     if (this.loginMode) {
-      authResponseObservable = this.authService.login(authRequestModel);
+      this.store.dispatch(new AuthActions.LoginStart(authRequestModel));
     }
     else {
-      authResponseObservable = this.authService.register(authRequestModel);
+      this.store.dispatch(new AuthActions.RegisterStart(authRequestModel));
     }
-
-    authResponseObservable.subscribe(
-      {
-        next: item => {
-          //console.log(item);
-          this.router.navigate(['/recipes']);
-          //this.error = false;
-          this.loading = false;
-        },
-        error: (err: Error) => {
-          //console.error(err);
-          //this.errorMessage = err.message;
-          this.showErrorAlert(err.message);
-          //this.error = true;
-          this.loading = false;
-        }
-      }
-    );
 
     this.modelForm.reset();
   }
 
-  private showErrorAlert(message: string){
+  private showErrorAlert(message: string) {
     this.errorPlaceHolder.viewContainerRef.clear();
     const componetRef = this.errorPlaceHolder.viewContainerRef.createComponent(AlertComponent);
     componetRef.instance.message = message;
     this.alertSubscription = componetRef.instance.close.subscribe(() => {
       this.errorPlaceHolder.viewContainerRef.clear();
+      this.store.dispatch(new AuthActions.ClearError());
       this.alertSubscription?.unsubscribe();
     });
   }
 
-  onAlertClose(){
+  onAlertClose() {
     //this.error = false;
   }
 }
