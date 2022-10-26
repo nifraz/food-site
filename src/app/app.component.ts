@@ -12,7 +12,6 @@ import * as AuthActions from './auth/store/auth.actions';
 })
 export class AppComponent implements OnInit {
   constructor(
-    private authService: AuthService, 
     private loggingService: LoggingService,
     private store: Store<fromApp.AppState>
     ){}

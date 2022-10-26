@@ -15,7 +15,7 @@ export class AuthEffects {
     private readonly REGISTER_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseApiKey}`;
 
     @Effect()
-    loginStart = this.actions.pipe(
+    loginStart = this.actions$.pipe(
         ofType(AuthActions.LOGIN_START),
         switchMap((action: AuthActions.LoginStart) =>
             this.httpClient.post<AuthResponseModel>(this.LOGIN_URL, action.payload)
@@ -35,7 +35,7 @@ export class AuthEffects {
     );
 
     @Effect()
-    registerStart = this.actions.pipe(
+    registerStart = this.actions$.pipe(
         ofType(AuthActions.REGISTER_START),
         switchMap((action: AuthActions.RegisterStart) =>
             this.httpClient.post<AuthResponseModel>(this.REGISTER_URL, action.payload)
@@ -55,15 +55,17 @@ export class AuthEffects {
     );
 
     @Effect({ dispatch: false })
-    authSuccess = this.actions.pipe(
+    authSuccess = this.actions$.pipe(
         ofType(AuthActions.AUTH_SUCCESS),
         tap((action: AuthActions.AuthSuccess) => {
-            this.router.navigate(['/']);
+            if (action.payload.redirect) {
+                this.router.navigate(['/']);
+            }
         })
     );
 
     @Effect({ dispatch: false })
-    logout = this.actions.pipe(
+    logout = this.actions$.pipe(
         ofType(AuthActions.LOGOUT),
         tap((action: AuthActions.Logout) => {
             this.authService.clearAutoLogout();
@@ -73,7 +75,7 @@ export class AuthEffects {
     );
 
     @Effect()
-    autoLogin = this.actions.pipe(
+    autoLogin = this.actions$.pipe(
         ofType(AuthActions.AUTO_LOGIN),
         map((action: AuthActions.AutoLogin) => {
             const userString = localStorage.getItem('user');
@@ -84,7 +86,7 @@ export class AuthEffects {
                     const user = new User(userObject.email, userObject.id, userObject._token, tokenExpirationDate);
                     this.authService.setAutoLogout(tokenExpirationDate.getTime() - new Date().getTime());
                     //console.log('autologin', user);
-                    return new AuthActions.AuthSuccess(user);
+                    return new AuthActions.AuthSuccess({ user: user, redirect: false });
                 }
             }
             return new AuthActions.Dummy();
@@ -92,7 +94,7 @@ export class AuthEffects {
     );
 
     constructor(
-        private actions: Actions,
+        private actions$: Actions,
         private httpClient: HttpClient,
         private router: Router,
         private authService: AuthService
@@ -103,7 +105,7 @@ const handleSuccess = (authResponseModel: AuthResponseModel) => {
     const tokenExpirationDate = new Date(new Date().getTime() + (+authResponseModel.expiresIn * 1000));
     const user = new User(authResponseModel.email, authResponseModel.localId, authResponseModel.idToken, tokenExpirationDate);
     localStorage.setItem('user', JSON.stringify(user));
-    return new AuthActions.AuthSuccess(user);
+    return new AuthActions.AuthSuccess({ user: user, redirect: true });
 };
 
 const handleError = (errorResponse: HttpErrorResponse) => {

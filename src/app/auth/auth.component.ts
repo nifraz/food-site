@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceholderDirective } from '../shared/placeholder.directive';
 import * as fromApp from '../store/app.reducer';
+import { AuthRequestModel } from './auth-request-model';
 import * as AuthActions from "./store/auth.actions";
 
 @Component({
@@ -69,7 +70,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     const authRequestModel = {
       ...this.modelForm.value,
       returnSecureToken: true
-    }
+    } as AuthRequestModel;
 
     if (this.loginMode) {
       this.store.dispatch(new AuthActions.LoginStart(authRequestModel));

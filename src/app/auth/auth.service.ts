@@ -1,8 +1,4 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthResponseModel } from './auth-response-model';
-import { User } from './user.model';
 import { environment } from '../../environments/environment';
 import * as fromApp from '../store/app.reducer';
 import * as AuthActions from './store/auth.actions';

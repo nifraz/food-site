@@ -17,8 +17,6 @@ const initialState: AuthState = {
 };
 
 export function authReducer(state: AuthState = initialState, action: Action): AuthState {
-    //debugger;
-    console.log('action reduced', action.type);
     switch (action.type) {
         case AuthActions.LOGIN_START:
         case AuthActions.REGISTER_START:
@@ -33,7 +31,7 @@ export function authReducer(state: AuthState = initialState, action: Action): Au
             const loginSuccessAction = action as AuthActions.AuthSuccess;
             return {
                 ...state,
-                user: loginSuccessAction.payload,
+                user: loginSuccessAction.payload.user,
                 loading: false,
                 error: false,
                 errorMessage: '',

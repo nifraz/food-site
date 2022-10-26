@@ -17,7 +17,7 @@ export class RegisterStart implements Action {
 export const AUTH_SUCCESS = '[Auth] Auth Success';
 export class AuthSuccess implements Action {
     readonly type: string = AUTH_SUCCESS;
-    constructor(public payload: User) { }
+    constructor(public payload: { user: User, redirect: boolean }) { }
 }
 
 export const AUTH_FAIL = '[Auth] Auth Fail';
